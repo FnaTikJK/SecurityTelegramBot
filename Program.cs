@@ -18,16 +18,15 @@ videoSource.NewFrame += VideoSource_NewFrame;
 var neiro = new Neiroweb(); 
 
 //Инициализация и данные бота
-string token = "";
+string token = ""; //
 var isWorking = false;
 var botClient = new TelegramBotClient(token);
 using var cts = new CancellationTokenSource();
 
 
-// StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
 var receiverOptions = new ReceiverOptions
 {
-    AllowedUpdates = { } // receive all update types
+    AllowedUpdates = { } 
 };
 botClient.StartReceiving(
     HandleUpdateAsync,
@@ -38,25 +37,25 @@ botClient.StartReceiving(
 var me = await botClient.GetMeAsync();
 Console.WriteLine($"Start listening for @{me.Username}");
 
-var chatId = 1066726563;
+long chatId = 0;
 var isPersonOnPhoto = false;
 var rootPath = new FileInfo(typeof(Program).Assembly.Location).Directory.FullName;
 var pathToPhoto = rootPath.Substring(0, rootPath.Length - 16) + @"assets\images\output\photo.jpg";
+
 
 while (true)
 {
     if (isWorking)
     {
         GC.Collect();
-        Thread.Sleep(2000);
-        videoSource.Start(); //сделать кадр
         Thread.Sleep(1000);
-        neiro = new Neiroweb();
+        videoSource.Start();
+        Thread.Sleep(2000);
+        videoSource.SignalToStop();
         MovePhoto("photo.jpg");
         isPersonOnPhoto = neiro.Initialize();
         if (isPersonOnPhoto && isWorking)
         {
-            
             using (var fileStream = new FileStream(pathToPhoto, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 await botClient.SendPhotoAsync(
@@ -76,7 +75,7 @@ while (true)
 
 Console.ReadLine();
 
-// Send cancellation request to stop bot
+
 cts.Cancel();
 
 async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -86,7 +85,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     if (update.Message!.Type != MessageType.Text)
         return;
 
-    var chatId = update.Message.Chat.Id;
+    chatId = update.Message.Chat.Id;
     var messageText = update.Message.Text;
 
     switch (messageText)

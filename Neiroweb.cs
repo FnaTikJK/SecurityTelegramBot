@@ -28,10 +28,6 @@ namespace ObjectDetection
             imagesFolder = Path.Combine(assetsPath, "images");
             outputFolder = Path.Combine(assetsPath, "images", "output");
 
-            //assetsPath = @"C:\Users\Антон\source\repos\ObjectDetection\ObjectDetection\bin\Debug\net6.0";
-            //modelFilePath = Path.Combine(assetsPath, "Model", "TinyYolo2_model.onnx");
-            //imagesFolder = assetsPath;
-            //outputFolder = Path.Combine(assetsPath, "output");
         }
 
         public void KillProcesses()
